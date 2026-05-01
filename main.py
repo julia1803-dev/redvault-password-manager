@@ -1,18 +1,20 @@
 from app.database.database import Database
 from app.database.password_repository import PasswordRepository
 from app.services.vault_service import VaultService
+from app.services.crypto_service import CryptoService
 
 
 def main():
     db = Database()
     repo = PasswordRepository(db)
-    service = VaultService(repo)
+    crypto = CryptoService()
 
-    # Test: Passwort speichern
-    service.add_password("github.com", "user@test.com", "123456")
+    service = VaultService(repo, crypto)
 
-    # Test: Anzeigen
+    service.add_password("github.com", "test@mail.com", "MeinPasswort123")
+
     entries = service.get_passwords()
+
     for entry in entries:
         print(entry)
 
