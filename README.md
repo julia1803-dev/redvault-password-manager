@@ -3,7 +3,7 @@
 RedVault ist ein lokaler Passwortmanager für Websites, entwickelt in Python.  
 Die Anwendung ermöglicht das sichere Speichern, Verwalten und Generieren von Passwörtern.
 
-## ✨ Features
+## Features
 
 - Master-Passwort Login
 - Verschlüsselte Speicherung von Passwörtern
@@ -13,7 +13,7 @@ Die Anwendung ermöglicht das sichere Speichern, Verwalten und Generieren von Pa
 - Kategorien für Einträge
 - Einfaches, dunkles UI (CustomTkinter)
 
-## 🛠 Technologien
+## Technologien
 
 - Python 3.x
 - CustomTkinter (GUI)
@@ -22,7 +22,7 @@ Die Anwendung ermöglicht das sichere Speichern, Verwalten und Generieren von Pa
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### 1. Repository klonen
 ```bash
@@ -39,15 +39,15 @@ venv\Scripts\activate
 4. Abhängigkeiten installieren
 pip install -r requirements.txt
 
-▶️ Programm starten
+▶Programm starten
 python main.py
 
-🔐 Sicherheit
+Sicherheit
 Master-Passwort wird nicht im Klartext gespeichert
 Schlüssel wird aus Passwort abgeleitet (PBKDF2 oder Argon2)
 Alle Daten werden verschlüsselt gespeichert (AES)
 
-📁 Projektstruktur
+Projektstruktur
 redvault/
 │
 ├── main.py
@@ -60,7 +60,7 @@ redvault/
 │   ├── database/
 │   └── ui/
 
-⚙️ Erweiterungen (optional)
+Erweiterungen (optional)
 Favoriten
 Papierkorb
 Passwortstärke-Anzeige

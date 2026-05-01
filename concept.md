@@ -1,11 +1,6 @@
 Projekt im Rahmen des HF Moduls OOP & Softwarearchitektur.
 
----
-
-# 📄 concept.md (für Bewertung ⭐)
-
-```markdown
-# 📘 Konzept – RedVault Passwortmanager
+---# Konzept – RedVault Passwortmanager
 
 ## 1. Projektidee
 
