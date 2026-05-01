@@ -12,6 +12,8 @@ def main():
     service = VaultService(repo, crypto)
 
     service.add_password("github.com", "test@mail.com", "MeinPasswort123")
+    service.add_password("google.com", "max@test.com", "abc123")
+    service.add_password("amazon.com", "shop@test.com", "secret456")
 
     entries = service.get_passwords()
 
