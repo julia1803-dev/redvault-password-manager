@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from PIL import Image
 from tkinter import messagebox
 from app.database.database import Database
 
@@ -238,16 +239,40 @@ def open_new_entry_form():
 
 
 root = ctk.CTk()
+logo_image = ctk.CTkImage(
+    light_image=Image.open("assets/logo.png"),
+    dark_image=Image.open("assets/logo.png"),
+    size=(40, 40)  # 👈 Größe anpassen
+)
 root.title("RedVault Passwortmanager")
 root.geometry("1000x650")
 root.configure(fg_color="#0b0b0b")
 
+title_frame = ctk.CTkFrame(root, fg_color="transparent")
+title_frame.pack(pady=25)
+
+# LOGO
 ctk.CTkLabel(
-    root,
-    text="RedVault",
-    font=("Arial", 42),
+    title_frame,
+    image=logo_image,
+    text=""
+).pack(side="left", padx=(0, 8))  # 👈 Abstand perfekt
+
+# RED
+ctk.CTkLabel(
+    title_frame,
+    text="RED",
+    font=("Arial", 42, "bold"),
     text_color="#e50914"
-).pack(pady=30)
+).pack(side="left")
+
+# VAULT
+ctk.CTkLabel(
+    title_frame,
+    text="VAULT",
+    font=("Arial", 42, "bold"),
+    text_color="#E5E5E5"
+).pack(side="left")
 
 button_frame = ctk.CTkFrame(root, fg_color="transparent")
 button_frame.pack(pady=10)
