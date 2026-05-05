@@ -21,7 +21,9 @@ def refresh_entries():
         entry_id = entry[0]
         website = entry[1]
         username = entry[2]
-        password = entry[3]
+        password = entry[3]   
+        category = entry[4]
+        notes = entry[5]
 
         shown_password = password if passwords_visible else "••••••••"
 
@@ -36,8 +38,10 @@ def refresh_entries():
         ctk.CTkLabel(row, text=website, width=370, anchor="w").grid(row=0, column=0, padx=20, pady=16, sticky="w")
         ctk.CTkLabel(row, text=username, width=330, anchor="w").grid(row=0, column=1, padx=20, sticky="w")
         ctk.CTkLabel(row, text=shown_password, width=220, anchor="w").grid(row=0, column=2, padx=5, sticky="w")
+        ctk.CTkLabel(row, text=category or "", width=160, anchor="w").grid(row=0, column=3, padx=5, sticky="w")
+        ctk.CTkLabel(row, text=notes or "", width=180, anchor="w").grid(row=0, column=4, padx=5, sticky="w")
         btn_frame = ctk.CTkFrame(row, fg_color="transparent")
-        btn_frame.grid(row=0, column=3, padx=25, pady=10)
+        btn_frame.grid(row=0, column=5, padx=25, pady=10)
 
         ctk.CTkButton(
             btn_frame,
@@ -46,7 +50,7 @@ def refresh_entries():
             height=34,
             fg_color="#222222",
             hover_color="#333333",
-            command=lambda p=password: copy_password(p)
+            command=lambda p=entry[3]: copy_password(p)
         ).pack(side="left", padx=4)
 
         ctk.CTkButton(
@@ -56,7 +60,7 @@ def refresh_entries():
             height=34,
             fg_color="#333333",
             hover_color="#444444",
-            command=lambda eid=entry_id, w=website, u=username, p=password: edit_entry(eid, w, u, p)
+            command=lambda eid=entry_id, w=website, u=username, p=password, c=category, n=notes: edit_entry(eid, w, u, p, c, n)
         ).pack(side="left", padx=4)
 
         ctk.CTkButton(
@@ -135,22 +139,17 @@ def copy_password(password):
     root.clipboard_append(password)
 
 
-def edit_entry(entry_id, old_website, old_username, old_password):
+def edit_entry(entry_id, old_website, old_username, old_password, old_category="", old_notes=""):
     form = ctk.CTkToplevel(root)
     form.lift()
     form.focus_force()
     form.grab_set()
     form.title("Eintrag bearbeiten")
-    form.geometry("420x420")
+    form.geometry("450x540")
     form.configure(fg_color="#0b0b0b")
     form.resizable(False, False)
 
-    ctk.CTkLabel(
-        form,
-        text="Eintrag bearbeiten",
-        font=("Arial", 26),
-        text_color="#e50914"
-    ).pack(pady=25)
+    ctk.CTkLabel(form, text="Eintrag bearbeiten", font=("Arial", 26), text_color="#e50914").pack(pady=25)
 
     website_entry = ctk.CTkEntry(form, width=300, height=40)
     website_entry.insert(0, old_website)
@@ -164,29 +163,34 @@ def edit_entry(entry_id, old_website, old_username, old_password):
     password_entry.insert(0, old_password)
     password_entry.pack(pady=8)
 
+    ctk.CTkLabel(form, text="Kategorie", text_color="#e50914").pack(anchor="w", padx=95)
+    category_entry = ctk.CTkEntry(form, width=300, height=40)
+    category_entry.insert(0, old_category or "")
+    category_entry.pack(pady=5)
+
+    ctk.CTkLabel(form, text="Notizen", text_color="#e50914").pack(anchor="w", padx=95)
+    notes_entry = ctk.CTkEntry(form, width=300, height=40)
+    notes_entry.insert(0, old_notes or "")
+    notes_entry.pack(pady=5)
+
     def save_changes():
         website = website_entry.get().strip()
         username = username_entry.get().strip()
         password = password_entry.get().strip()
+        category = category_entry.get().strip()
+        notes = notes_entry.get().strip()
 
         if website == "" or username == "" or password == "":
-            messagebox.showwarning("Fehler", "Bitte alle Felder ausfüllen.")
+            messagebox.showwarning("Fehler", "Bitte alle Pflichtfelder ausfüllen.")
             return
 
-        db.update_entry(entry_id, website, username, password)
+        db.update_entry(entry_id, website, username, password, category, notes)
         refresh_entries()
         form.destroy()
 
-    ctk.CTkButton(
-        form,
-        text="Änderungen speichern",
-        command=save_changes,
-        fg_color="#e50914",
-        hover_color="#ff1a25",
-        width=220,
-        height=45
-    ).pack(pady=25)
-
+    ctk.CTkButton(form, text="Änderungen speichern", command=save_changes,
+                  fg_color="#e50914", hover_color="#ff1a25",
+                  width=220, height=45).pack(pady=25)
 
 def open_new_entry_form():
     form = ctk.CTkToplevel(root)
@@ -213,17 +217,25 @@ def open_new_entry_form():
 
     password_entry = ctk.CTkEntry(form, placeholder_text="Passwort", width=300, height=40, show="*")
     password_entry.pack(pady=8)
+    category_entry = ctk.CTkEntry(form, placeholder_text="Kategorie", width=300, height=40)
+    category_entry.pack(pady=8)
+
+    notes_entry = ctk.CTkEntry(form, placeholder_text="Notizen", width=300, height=40)
+    notes_entry.pack(pady=8)
 
     def save_entry():
         website = website_entry.get().strip()
         username = username_entry.get().strip()
         password = password_entry.get().strip()
+        category = category_entry.get().strip()
+        notes = notes_entry.get().strip()
+
 
         if website == "" or username == "" or password == "":
             messagebox.showwarning("Fehler", "Bitte alle Felder ausfüllen.")
             return
 
-        db.add_entry(website, username, password)
+        db.add_entry(website, username, password, category, notes)
         refresh_entries()
         form.destroy()
 
@@ -315,8 +327,9 @@ header.grid_columnconfigure(3, weight=0)
 ctk.CTkLabel(header, text="Website", text_color="#e50914", width=370, anchor="w").grid(row=0, column=0, padx=20, sticky="w")
 ctk.CTkLabel(header, text="Benutzername", text_color="#e50914", width=330, anchor="w").grid(row=0, column=1, padx=20, sticky="w")
 ctk.CTkLabel(header, text="Passwort", text_color="#e50914", width=220, anchor="w").grid(row=0, column=2, padx=5, sticky="w")
-ctk.CTkLabel(header, text="Aktionen", text_color="#e50914", width=200, anchor="w").grid(row=0, column=3, padx=25, sticky="w")
-
+ctk.CTkLabel(header, text="Kategorie", text_color="#e50914", width=160, anchor="w").grid(row=0, column=3, padx=5, sticky="w")
+ctk.CTkLabel(header, text="Notizen", text_color="#e50914", width=180, anchor="w").grid(row=0, column=4, padx=5, sticky="w")
+ctk.CTkLabel(header, text="Aktionen", text_color="#e50914", width=200, anchor="w").grid(row=0, column=5, padx=25, sticky="w")
 entries_frame = ctk.CTkScrollableFrame(inner, fg_color="#101010")
 entries_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
