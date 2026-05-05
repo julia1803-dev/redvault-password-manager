@@ -14,10 +14,23 @@ passwords_visible = False
 def refresh_entries():
     for widget in entries_frame.winfo_children():
         widget.destroy()
+        
+    search_text = search_entry.get().lower()
 
     entries = db.get_entries()
 
     for entry in entries:
+        website_filter = entry[1].lower()
+        username_filter = entry[2].lower()
+        category_filter = (entry[4] or "").lower()
+        notes_filter = (entry[5] or "").lower()
+
+        if search_text not in website_filter and \
+        search_text not in username_filter and \
+        search_text not in category_filter and \
+        search_text not in notes_filter:
+         continue
+
         entry_id = entry[0]
         website = entry[1]
         username = entry[2]
@@ -105,8 +118,31 @@ def delete_entry(entry_id):
         text_color="#e50914"
     ).pack(pady=35)
 
-    button_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+    button_frame = ctk.CTkFrame(root, fg_color="transparent")
     button_frame.pack(pady=10)
+
+    ctk.CTkButton(
+        button_frame,
+        text="+ Neuer Eintrag",
+        command=open_new_entry_form
+    ).grid(row=0, column=0, padx=10)
+
+    show_button = ctk.CTkButton(
+        button_frame,
+        text="Passwörter anzeigen",
+        command=toggle_passwords
+    )
+    show_button.grid(row=0, column=1, padx=10)
+
+    search_entry = ctk.CTkEntry(
+        root,
+        placeholder_text="🔍 Suchen nach Website, Benutzername, Kategorie oder Notizen...",
+        width=500,
+        height=40
+    )
+    search_entry.pack(pady=(5, 15))
+
+    search_entry.bind("<KeyRelease>", lambda e: refresh_entries())
 
     def confirm_delete():
         db.delete_entry(entry_id)
@@ -332,6 +368,11 @@ ctk.CTkLabel(header, text="Notizen", text_color="#e50914", width=180, anchor="w"
 ctk.CTkLabel(header, text="Aktionen", text_color="#e50914", width=200, anchor="w").grid(row=0, column=5, padx=25, sticky="w")
 entries_frame = ctk.CTkScrollableFrame(inner, fg_color="#101010")
 entries_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+search_entry = ctk.CTkEntry(root, placeholder_text="Suchen...", width=300)
+search_entry.pack(pady=10)
+
+search_entry.bind("<KeyRelease>", lambda e: refresh_entries())
 
 refresh_entries()
 
