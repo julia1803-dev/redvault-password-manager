@@ -25,7 +25,6 @@ Die Anwendung ermöglicht das sichere Speichern, Verwalten und Generieren von Pa
 ## Installation
 
 ### 1. Repository klonen
-```bash
 git clone https://github.com/DEIN_USERNAME/redvault-password-manager.git
 cd redvault-password-manager
 
@@ -40,7 +39,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 ▶Programm starten
-python main.py
+py main.py
 
 Sicherheit
 Master-Passwort wird nicht im Klartext gespeichert

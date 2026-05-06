@@ -244,30 +244,36 @@ def edit_entry(entry_id, old_website, old_username, old_password, old_category="
     form.focus_force()
     form.grab_set()
     form.title("Eintrag bearbeiten")
-    form.geometry("450x540")
+    form.geometry("600x700")
     form.configure(fg_color="#0b0b0b")
     form.resizable(False, False)
 
     ctk.CTkLabel(form, text="Eintrag bearbeiten", font=("Arial", 26), text_color="#e50914").pack(pady=25)
+    
+    ctk.CTkLabel(form,text="Website",text_color="#e50914",font=("Arial", 14, "bold")).pack(anchor="w", padx=150)
 
     website_entry = ctk.CTkEntry(form, width=300, height=40)
     website_entry.insert(0, old_website)
     website_entry.pack(pady=8)
 
+    ctk.CTkLabel(form,text="Benutzername",text_color="#e50914",font=("Arial", 14, "bold")).pack(anchor="w", padx=150)
+
     username_entry = ctk.CTkEntry(form, width=300, height=40)
     username_entry.insert(0, old_username)
     username_entry.pack(pady=8)
+
+    ctk.CTkLabel(form,text="Passwort",text_color="#e50914",font=("Arial", 14, "bold")).pack(anchor="w", padx=150)
 
     password_entry = ctk.CTkEntry(form, width=300, height=40)
     password_entry.insert(0, old_password)
     password_entry.pack(pady=8)
 
-    ctk.CTkLabel(form, text="Kategorie", text_color="#e50914").pack(anchor="w", padx=95)
+    ctk.CTkLabel(form, text="Kategorie", text_color="#e50914").pack(anchor="w", padx=150)
     category_entry = ctk.CTkEntry(form, width=300, height=40)
     category_entry.insert(0, old_category or "")
     category_entry.pack(pady=5)
 
-    ctk.CTkLabel(form, text="Notizen", text_color="#e50914").pack(anchor="w", padx=95)
+    ctk.CTkLabel(form, text="Notizen", text_color="#e50914").pack(anchor="w", padx=150)
     notes_entry = ctk.CTkEntry(form, width=300, height=40)
     notes_entry.insert(0, old_notes or "")
     notes_entry.pack(pady=5)
@@ -297,7 +303,7 @@ def open_new_entry_form():
     form.focus_force()
     form.grab_set()
     form.title("Neuer Eintrag")
-    form.geometry("420x420")
+    form.geometry("600x700")
     form.configure(fg_color="#0b0b0b")
     form.resizable(False, False)
 
