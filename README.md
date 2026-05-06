@@ -110,16 +110,16 @@ redvault/
 ## Screenshots
 
 ### Login
-![Login]("C:\Tools\redvault\assets\Screeshot_Master_Passwort.png")
+![Login](assets/Screenshot_Master_Passwort.png)
 
 ### Dashboard
-![Dashboard]("C:\Tools\redvault\assets\Screenshot_Dashboard.png")
+![Dashboard](assets/Screenshot_Dashboard.png)
 
 ### Neuer Eintrag
-![Neuer Eintrag]("C:\Tools\redvault\assets\Screenshot_Neuer_Eintrag.png")
+![Neuer Eintrag](assets/Screenshot_Neuer_Eintrag.png)
 
 ### Bearbeiten
-![Bearbeiten]("C:\Tools\redvault\assets\Screenshot_Bearbeiten.png")
+![Bearbeiten](assets/Screenshot_Bearbeiten.png)
 
 ### Löschen
-![Löschen]("C:\Tools\redvault\assets\Screenshot_Löschen.png")
+![Löschen](assets/Screenshot_Löschen.png)
