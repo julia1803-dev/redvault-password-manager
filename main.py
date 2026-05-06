@@ -2,13 +2,98 @@ import customtkinter as ctk
 from PIL import Image
 from tkinter import messagebox
 from app.database.database import Database
-
+from app.services.crypto_service import hash_master_password, verify_master_password
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
+MASTER_PASSWORD = "Admin123!"
+
 db = Database()
+conn = db.connection
 passwords_visible = False
+
+
+def setup_master_password(conn):
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT value FROM settings WHERE key='master_hash'")
+    result = cursor.fetchone()
+
+    if result is None:
+        salt, pw_hash = hash_master_password(MASTER_PASSWORD)
+
+        cursor.execute("INSERT INTO settings (key, value) VALUES (?, ?)", ("master_salt", salt))
+        cursor.execute("INSERT INTO settings (key, value) VALUES (?, ?)", ("master_hash", pw_hash))
+
+        conn.commit()
+
+
+def show_login():
+    login_window = ctk.CTk()
+    login_window.title("RedVault Login")
+    login_window.geometry("350x250")
+    login_window.configure(fg_color="#0b0b0b")
+
+    ctk.CTkLabel(
+        login_window,
+        text="REDVAULT",
+        font=("Arial", 28, "bold"),
+        text_color="#e50914"
+    ).pack(pady=(20, 10))
+
+    ctk.CTkLabel(
+        login_window,
+        text="Master-Passwort",
+        text_color="#E5E5E5"
+    ).pack(pady=5)
+
+    password_entry = ctk.CTkEntry(
+        login_window,
+        show="*",
+        width=220,
+        height=40,
+        fg_color="#1c1c1c",
+        text_color="white",
+        border_color="#e50914"
+    )
+    password_entry.pack(pady=10)
+
+    error_label = ctk.CTkLabel(
+        login_window,
+        text="",
+        text_color="#e50914"
+    )
+    error_label.pack()
+
+    def check_login():
+        password = password_entry.get()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT value FROM settings WHERE key='master_salt'")
+        salt = cursor.fetchone()[0]
+
+        cursor.execute("SELECT value FROM settings WHERE key='master_hash'")
+        saved_hash = cursor.fetchone()[0]
+
+        if verify_master_password(password, salt, saved_hash):
+            login_window.destroy()
+            open_main_app()
+        else:
+            error_label.configure(text="Falsches Passwort")
+
+    ctk.CTkButton(
+        login_window,
+        text="Entsperren",
+        command=check_login,
+        fg_color="#e50914",
+        hover_color="#ff1a25",
+        text_color="white",
+        width=200,
+        height=40
+    ).pack(pady=15)
+
+    login_window.mainloop()
 
 
 def refresh_entries():
@@ -118,31 +203,9 @@ def delete_entry(entry_id):
         text_color="#e50914"
     ).pack(pady=35)
 
-    button_frame = ctk.CTkFrame(root, fg_color="transparent")
+    button_frame = ctk.CTkFrame(dialog, fg_color="transparent")
     button_frame.pack(pady=10)
 
-    ctk.CTkButton(
-        button_frame,
-        text="+ Neuer Eintrag",
-        command=open_new_entry_form
-    ).grid(row=0, column=0, padx=10)
-
-    show_button = ctk.CTkButton(
-        button_frame,
-        text="Passwörter anzeigen",
-        command=toggle_passwords
-    )
-    show_button.grid(row=0, column=1, padx=10)
-
-    search_entry = ctk.CTkEntry(
-        root,
-        placeholder_text="🔍 Suchen nach Website, Benutzername, Kategorie oder Notizen...",
-        width=500,
-        height=40
-    )
-    search_entry.pack(pady=(5, 15))
-
-    search_entry.bind("<KeyRelease>", lambda e: refresh_entries())
 
     def confirm_delete():
         db.delete_entry(entry_id)
@@ -285,95 +348,101 @@ def open_new_entry_form():
         height=45
     ).pack(pady=25)
 
+def open_main_app():
+    global root, show_button, entries_frame, search_entry
 
-root = ctk.CTk()
-logo_image = ctk.CTkImage(
-    light_image=Image.open("assets/logo.png"),
-    dark_image=Image.open("assets/logo.png"),
-    size=(40, 40)  # 👈 Größe anpassen
-)
-root.title("RedVault Passwortmanager")
-root.geometry("1000x650")
-root.configure(fg_color="#0b0b0b")
+    root = ctk.CTk()
 
-title_frame = ctk.CTkFrame(root, fg_color="transparent")
-title_frame.pack(pady=25)
+    logo_image = ctk.CTkImage(
+        light_image=Image.open("assets/logo.png"),
+        dark_image=Image.open("assets/logo.png"),
+        size=(40, 40)
+    )
 
-# LOGO
-ctk.CTkLabel(
-    title_frame,
-    image=logo_image,
-    text=""
-).pack(side="left", padx=(0, 8))  # 👈 Abstand perfekt
+    root.title("RedVault Passwortmanager")
+    root.geometry("1000x650")
+    root.configure(fg_color="#0b0b0b")
 
-# RED
-ctk.CTkLabel(
-    title_frame,
-    text="RED",
-    font=("Arial", 42, "bold"),
-    text_color="#e50914"
-).pack(side="left")
+    title_frame = ctk.CTkFrame(root, fg_color="transparent")
+    title_frame.pack(pady=25)
 
-# VAULT
-ctk.CTkLabel(
-    title_frame,
-    text="VAULT",
-    font=("Arial", 42, "bold"),
-    text_color="#E5E5E5"
-).pack(side="left")
+    # LOGO
+    ctk.CTkLabel(
+        title_frame,
+        image=logo_image,
+        text=""
+    ).pack(side="left", padx=(0, 8))  # 👈 Abstand perfekt
 
-button_frame = ctk.CTkFrame(root, fg_color="transparent")
-button_frame.pack(pady=10)
+    # RED
+    ctk.CTkLabel(
+        title_frame,
+        text="RED",
+        font=("Arial", 42, "bold"),
+        text_color="#e50914"
+    ).pack(side="left")
 
-ctk.CTkButton(
-    button_frame,
-    text="+ Neuer Eintrag",
-    command=open_new_entry_form,
-    fg_color="#e50914",
-    hover_color="#ff1a25",
-    width=200,
-    height=45
-).grid(row=0, column=0, padx=10)
+    # VAULT
+    ctk.CTkLabel(
+        title_frame,
+        text="VAULT",
+        font=("Arial", 42, "bold"),
+        text_color="#E5E5E5"
+    ).pack(side="left")
 
-show_button = ctk.CTkButton(
-    button_frame,
-    text="Passwörter anzeigen",
-    command=toggle_passwords,
-    fg_color="#222222",
-    hover_color="#333333",
-    width=200,
-    height=45
-)
-show_button.grid(row=0, column=1, padx=10)
+    button_frame = ctk.CTkFrame(root, fg_color="transparent")
+    button_frame.pack(pady=10)
 
-container = ctk.CTkFrame(root, fg_color="#e50914", corner_radius=16)
-container.pack(padx=40, pady=30, fill="both", expand=True)
+    ctk.CTkButton(
+        button_frame,
+        text="+ Neuer Eintrag",
+        command=open_new_entry_form,
+        fg_color="#e50914",
+        hover_color="#ff1a25",
+        width=200,
+        height=45
+    ).grid(row=0, column=0, padx=10)
 
-inner = ctk.CTkFrame(container, fg_color="#101010", corner_radius=14)
-inner.pack(padx=2, pady=2, fill="both", expand=True)
+    show_button = ctk.CTkButton(
+        button_frame,
+        text="Passwörter anzeigen",
+        command=toggle_passwords,
+        fg_color="#222222",
+        hover_color="#333333",
+        width=200,
+        height=45
+    )
+    show_button.grid(row=0, column=1, padx=10)
 
-header = ctk.CTkFrame(inner, fg_color="#101010")
-header.pack(fill="x", padx=25, pady=(10, 5))
+    container = ctk.CTkFrame(root, fg_color="#e50914", corner_radius=16)
+    container.pack(padx=40, pady=30, fill="both", expand=True)
 
-header.grid_columnconfigure(0, weight=2)
-header.grid_columnconfigure(1, weight=1)
-header.grid_columnconfigure(2, weight=1)
-header.grid_columnconfigure(3, weight=0)
+    inner = ctk.CTkFrame(container, fg_color="#101010", corner_radius=14)
+    inner.pack(padx=2, pady=2, fill="both", expand=True)
 
-ctk.CTkLabel(header, text="Website", text_color="#e50914", width=370, anchor="w").grid(row=0, column=0, padx=20, sticky="w")
-ctk.CTkLabel(header, text="Benutzername", text_color="#e50914", width=330, anchor="w").grid(row=0, column=1, padx=20, sticky="w")
-ctk.CTkLabel(header, text="Passwort", text_color="#e50914", width=220, anchor="w").grid(row=0, column=2, padx=5, sticky="w")
-ctk.CTkLabel(header, text="Kategorie", text_color="#e50914", width=160, anchor="w").grid(row=0, column=3, padx=5, sticky="w")
-ctk.CTkLabel(header, text="Notizen", text_color="#e50914", width=180, anchor="w").grid(row=0, column=4, padx=5, sticky="w")
-ctk.CTkLabel(header, text="Aktionen", text_color="#e50914", width=200, anchor="w").grid(row=0, column=5, padx=25, sticky="w")
-entries_frame = ctk.CTkScrollableFrame(inner, fg_color="#101010")
-entries_frame.pack(fill="both", expand=True, padx=10, pady=10)
+    header = ctk.CTkFrame(inner, fg_color="#101010")
+    header.pack(fill="x", padx=25, pady=(10, 5))
 
-search_entry = ctk.CTkEntry(root, placeholder_text="Suchen...", width=300)
-search_entry.pack(pady=10)
+    header.grid_columnconfigure(0, weight=2)
+    header.grid_columnconfigure(1, weight=1)
+    header.grid_columnconfigure(2, weight=1)
+    header.grid_columnconfigure(3, weight=0)
 
-search_entry.bind("<KeyRelease>", lambda e: refresh_entries())
+    ctk.CTkLabel(header, text="Website", text_color="#e50914", width=370, anchor="w").grid(row=0, column=0, padx=20, sticky="w")
+    ctk.CTkLabel(header, text="Benutzername", text_color="#e50914", width=330, anchor="w").grid(row=0, column=1, padx=20, sticky="w")
+    ctk.CTkLabel(header, text="Passwort", text_color="#e50914", width=220, anchor="w").grid(row=0, column=2, padx=5, sticky="w")
+    ctk.CTkLabel(header, text="Kategorie", text_color="#e50914", width=160, anchor="w").grid(row=0, column=3, padx=5, sticky="w")
+    ctk.CTkLabel(header, text="Notizen", text_color="#e50914", width=180, anchor="w").grid(row=0, column=4, padx=5, sticky="w")
+    ctk.CTkLabel(header, text="Aktionen", text_color="#e50914", width=200, anchor="w").grid(row=0, column=5, padx=25, sticky="w")
+    entries_frame = ctk.CTkScrollableFrame(inner, fg_color="#101010")
+    entries_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-refresh_entries()
+    search_entry = ctk.CTkEntry(root, placeholder_text="Suchen...", width=300)
+    search_entry.pack(pady=10)
 
-root.mainloop()
+    search_entry.bind("<KeyRelease>", lambda e: refresh_entries())
+
+    refresh_entries()
+    root.mainloop()
+
+setup_master_password(conn)
+show_login()
