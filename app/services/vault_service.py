@@ -1,6 +1,5 @@
 from app.models.password_entry import PasswordEntry
 
-
 class VaultService:
     def __init__(self, repository, crypto_service):
         self.repository = repository

@@ -3,6 +3,7 @@ from PIL import Image
 from tkinter import messagebox
 from app.database.database import Database
 from app.services.crypto_service import hash_master_password, verify_master_password
+from app.services.password_generator import PasswordGenerator
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -35,12 +36,22 @@ def show_login():
     login_window.geometry("350x250")
     login_window.configure(fg_color="#0b0b0b")
 
+    title_frame = ctk.CTkFrame(login_window, fg_color="transparent")
+    title_frame.pack(pady=(20, 10))
+
     ctk.CTkLabel(
-        login_window,
-        text="REDVAULT",
-        font=("Arial", 28, "bold"),
-        text_color="#e50914"
-    ).pack(pady=(20, 10))
+    title_frame,
+    text="RED",
+    font=("Arial", 28, "bold"),
+    text_color="#e50914"
+    ).pack(side="left")
+
+    ctk.CTkLabel(
+    title_frame,
+    text="VAULT",
+    font=("Arial", 28, "bold"),
+    text_color="#E5E5E5"
+    ).pack(side="left")
 
     ctk.CTkLabel(
         login_window,
@@ -77,8 +88,7 @@ def show_login():
         saved_hash = cursor.fetchone()[0]
 
         if verify_master_password(password, salt, saved_hash):
-            login_window.destroy()
-            open_main_app()
+            open_main_app(login_window)
         else:
             error_label.configure(text="Falsches Passwort")
 
@@ -190,7 +200,7 @@ def delete_entry(entry_id):
     dialog.title("Löschen")
     dialog.geometry("360x200")
     dialog.configure(fg_color="#0b0b0b")
-    dialog.resizable(False, False)
+    dialog.protocol("WM_DELETE_WINDOW", lambda: close_window(dialog))
 
     dialog.lift()
     dialog.focus_force()
@@ -210,7 +220,8 @@ def delete_entry(entry_id):
     def confirm_delete():
         db.delete_entry(entry_id)
         refresh_entries()
-        dialog.destroy()
+        close_window(dialog)
+        
 
     ctk.CTkButton(
         button_frame,
@@ -225,7 +236,7 @@ def delete_entry(entry_id):
     ctk.CTkButton(
         button_frame,
         text="Nein",
-        command=dialog.destroy,
+        command=lambda: close_window(dialog),
         fg_color="#222222",
         hover_color="#333333",
         width=120,
@@ -237,6 +248,17 @@ def copy_password(password):
     root.clipboard_clear()
     root.clipboard_append(password)
 
+def close_window(window):
+    try:
+        window.grab_release()
+    except:
+        pass
+
+    try:
+        window.destroy()
+    except:
+        pass
+
 
 def edit_entry(entry_id, old_website, old_username, old_password, old_category="", old_notes=""):
     form = ctk.CTkToplevel(root)
@@ -246,7 +268,7 @@ def edit_entry(entry_id, old_website, old_username, old_password, old_category="
     form.title("Eintrag bearbeiten")
     form.geometry("600x700")
     form.configure(fg_color="#0b0b0b")
-    form.resizable(False, False)
+    form.protocol("WM_DELETE_WINDOW", lambda: close_window(form))
 
     ctk.CTkLabel(form, text="Eintrag bearbeiten", font=("Arial", 26), text_color="#e50914").pack(pady=25)
     
@@ -291,7 +313,7 @@ def edit_entry(entry_id, old_website, old_username, old_password, old_category="
 
         db.update_entry(entry_id, website, username, password, category, notes)
         refresh_entries()
-        form.destroy()
+        close_window(form)
 
     ctk.CTkButton(form, text="Änderungen speichern", command=save_changes,
                   fg_color="#e50914", hover_color="#ff1a25",
@@ -322,6 +344,22 @@ def open_new_entry_form():
 
     password_entry = ctk.CTkEntry(form, placeholder_text="Passwort", width=300, height=40, show="*")
     password_entry.pack(pady=8)
+
+    def generate_password():
+        generated_password = PasswordGenerator.generate()
+        password_entry.delete(0, "end")
+        password_entry.insert(0, generated_password)
+
+    ctk.CTkButton(
+    form,
+    text="Passwort generieren",
+    command=generate_password,
+    fg_color="#222222",
+    hover_color="#333333",
+    width=220,
+    height=40
+    ).pack(pady=8)
+
     category_entry = ctk.CTkEntry(form, placeholder_text="Kategorie", width=300, height=40)
     category_entry.pack(pady=8)
 
@@ -342,7 +380,7 @@ def open_new_entry_form():
 
         db.add_entry(website, username, password, category, notes)
         refresh_entries()
-        form.destroy()
+        close_window(form)
 
     ctk.CTkButton(
         form,
@@ -354,20 +392,25 @@ def open_new_entry_form():
         height=45
     ).pack(pady=25)
 
-def open_main_app():
+def open_main_app(window):
     global root, show_button, entries_frame, search_entry
 
-    root = ctk.CTk()
+    root = window
+
+    for widget in root.winfo_children():
+        widget.pack_forget()
+        widget.grid_forget()
+        widget.place_forget()
 
     logo_image = ctk.CTkImage(
         light_image=Image.open("assets/logo.png"),
         dark_image=Image.open("assets/logo.png"),
         size=(40, 40)
     )
-
+    root.logo_image = logo_image
     root.title("RedVault Passwortmanager")
     root.geometry("1000x650")
-    root.configure(fg_color="#0b0b0b")
+    root.protocol("WM_DELETE_WINDOW", lambda: close_window(root))
 
     title_frame = ctk.CTkFrame(root, fg_color="transparent")
     title_frame.pack(pady=25)
@@ -448,7 +491,6 @@ def open_main_app():
     search_entry.bind("<KeyRelease>", lambda e: refresh_entries())
 
     refresh_entries()
-    root.mainloop()
 
 setup_master_password(conn)
 show_login()
