@@ -1,79 +1,107 @@
 import customtkinter as ctk
 
+from app.services.crypto_service import hash_master_password, verify_master_password
+
+
+MASTER_PASSWORD = "Admin123!"
+
 
 class LoginView(ctk.CTkFrame):
-    def __init__(self, master, on_login):
-        super().__init__(master)
-        self.on_login = on_login
+    def __init__(self, master, db, on_login_success):
+        super().__init__(master, fg_color="#0b0b0b")
 
-        self.configure(fg_color="#0F0F12")
+        self.db = db
+        self.conn = db.connection
+        self.on_login_success = on_login_success
 
-        self.card = ctk.CTkFrame(
-            self,
-            width=360,
-            height=320,
-            corner_radius=18,
-            fg_color="#1A1A1F"
-        )
-        self.card.place(relx=0.5, rely=0.5, anchor="center")
+        self.setup_master_password()
+        self.create_widgets()
 
-        self.title = ctk.CTkLabel(
-            self.card,
-            text="🔐 RedVault",
+    def setup_master_password(self):
+        cursor = self.conn.cursor()
+
+        cursor.execute("SELECT value FROM settings WHERE key='master_hash'")
+        result = cursor.fetchone()
+
+        if result is None:
+            salt, pw_hash = hash_master_password(MASTER_PASSWORD)
+
+            cursor.execute(
+                "INSERT INTO settings (key, value) VALUES (?, ?)",
+                ("master_salt", salt)
+            )
+
+            cursor.execute(
+                "INSERT INTO settings (key, value) VALUES (?, ?)",
+                ("master_hash", pw_hash)
+            )
+
+            self.conn.commit()
+
+    def create_widgets(self):
+        title_frame = ctk.CTkFrame(self, fg_color="transparent")
+        title_frame.pack(pady=(20, 10))
+
+        ctk.CTkLabel(
+            title_frame,
+            text="RED",
             font=("Arial", 28, "bold"),
-            text_color="white"
-        )
-        self.title.pack(pady=(35, 10))
+            text_color="#e50914"
+        ).pack(side="left")
 
-        self.subtitle = ctk.CTkLabel(
-            self.card,
-            text="Tresor mit Master-Passwort entsperren",
-            font=("Arial", 14),
-            text_color="#B8B8B8"
-        )
-        self.subtitle.pack(pady=(0, 25))
+        ctk.CTkLabel(
+            title_frame,
+            text="VAULT",
+            font=("Arial", 28, "bold"),
+            text_color="#E5E5E5"
+        ).pack(side="left")
+
+        ctk.CTkLabel(
+            self,
+            text="Master-Passwort",
+            text_color="#E5E5E5"
+        ).pack(pady=5)
 
         self.password_entry = ctk.CTkEntry(
-            self.card,
-            width=260,
-            height=42,
-            placeholder_text="Master-Passwort",
+            self,
             show="*",
-            fg_color="#111116",
-            border_color="#2A2A32",
-            text_color="white"
+            width=220,
+            height=40,
+            fg_color="#1c1c1c",
+            text_color="white",
+            border_color="#e50914"
         )
         self.password_entry.pack(pady=10)
 
-        self.login_button = ctk.CTkButton(
-            self.card,
-            text="Tresor entsperren",
-            width=260,
-            height=42,
-            fg_color="#C60018",
-            hover_color="#990013",
-            command=self.login
-        )
-        self.login_button.pack(pady=15)
-
-        self.message = ctk.CTkLabel(
-            self.card,
+        self.error_label = ctk.CTkLabel(
+            self,
             text="",
-            text_color="#FF4D4D",
-            font=("Arial", 12)
+            text_color="#e50914"
         )
-        self.message.pack()
+        self.error_label.pack()
 
-        self.password_entry.bind("<Return>", lambda event: self.login())
+        ctk.CTkButton(
+            self,
+            text="Entsperren",
+            command=self.check_login,
+            fg_color="#e50914",
+            hover_color="#ff1a25",
+            text_color="white",
+            width=200,
+            height=40
+        ).pack(pady=15)
 
-    def login(self):
+    def check_login(self):
         password = self.password_entry.get()
+        cursor = self.conn.cursor()
 
-        if not password:
-            self.message.configure(text="Bitte Master-Passwort eingeben.")
-            return
+        cursor.execute("SELECT value FROM settings WHERE key='master_salt'")
+        salt = cursor.fetchone()[0]
 
-        self.on_login(password)
+        cursor.execute("SELECT value FROM settings WHERE key='master_hash'")
+        saved_hash = cursor.fetchone()[0]
 
-    def show_error(self, text):
-        self.message.configure(text=text)
+        if verify_master_password(password, salt, saved_hash):
+            self.on_login_success()
+        else:
+            self.error_label.configure(text="Falsches Passwort")
