@@ -1,4 +1,5 @@
 class PasswordEntry:
+    #Psswort-Eintrag
     def __init__(self, website, username, password, category="", notes=""):
         self.website = website
         self.username = username
