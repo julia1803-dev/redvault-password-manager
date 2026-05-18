@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-from app.services.crypto_service import hash_master_password, verify_master_password
+from app.services.crypto_service import hash_master_password, verify_master_password # Funktionen für Passwort-Hashing und Überprüfung
 
 
 MASTER_PASSWORD = "Admin123!"
@@ -8,23 +8,23 @@ MASTER_PASSWORD = "Admin123!"
 
 class LoginView(ctk.CTkFrame):
     def __init__(self, master, db, on_login_success):
-        super().__init__(master, fg_color="#0b0b0b")
+        super().__init__(master, fg_color="#0b0b0b") # Basis-Frame initialisieren
 
         self.db = db
-        self.conn = db.connection
+        self.conn = db.connection # Datenbankverbindung speichern
         self.on_login_success = on_login_success
 
-        self.setup_master_password()
+        self.setup_master_password() # Erstellt Master-Passwort beim ersten Start
         self.create_widgets()
 
-    def setup_master_password(self):
+    def setup_master_password(self):  # Speichert Hash + Salt in der Datenbank
         cursor = self.conn.cursor()
 
-        cursor.execute("SELECT value FROM settings WHERE key='master_hash'")
+        cursor.execute("SELECT value FROM settings WHERE key='master_hash'")  # Prüft ob Passwort bereits existiert
         result = cursor.fetchone()
 
         if result is None:
-            salt, pw_hash = hash_master_password(MASTER_PASSWORD)
+            salt, pw_hash = hash_master_password(MASTER_PASSWORD)# Passwort hashen
 
             cursor.execute(
                 "INSERT INTO settings (key, value) VALUES (?, ?)",
@@ -62,6 +62,7 @@ class LoginView(ctk.CTkFrame):
             text_color="#E5E5E5"
         ).pack(pady=5)
 
+        # Passwort-Eingabefeld
         self.password_entry = ctk.CTkEntry(
             self,
             show="*",
@@ -91,8 +92,8 @@ class LoginView(ctk.CTkFrame):
             height=40
         ).pack(pady=15)
 
-    def check_login(self):
-        password = self.password_entry.get()
+    def check_login(self): # Überprüft eingegebenes Passwort
+        password = self.password_entry.get() # Eingegebenes Passwort holen
         cursor = self.conn.cursor()
 
         cursor.execute("SELECT value FROM settings WHERE key='master_salt'")
@@ -101,7 +102,7 @@ class LoginView(ctk.CTkFrame):
         cursor.execute("SELECT value FROM settings WHERE key='master_hash'")
         saved_hash = cursor.fetchone()[0]
 
-        if verify_master_password(password, salt, saved_hash):
+        if verify_master_password(password, salt, saved_hash): # Öffnet Dashboard bei korrektem Passwort
             self.on_login_success()
         else:
             self.error_label.configure(text="Falsches Passwort")

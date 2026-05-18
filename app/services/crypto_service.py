@@ -11,7 +11,7 @@ class CryptoService:
         self.key = self.load_or_create_key()
          # Erstellt Fernet-Objekt mit dem Schlüssel
         self.fernet = Fernet(self.key)
-# Lädt vorhandenen Schlüssel oder erstellt einen neuen
+    # Lädt vorhandenen Schlüssel oder erstellt einen neuen
     def load_or_create_key(self):
         # Prüft, ob die Schlüsseldatei existiert
         if os.path.exists(self.key_file):
@@ -27,7 +27,7 @@ class CryptoService:
             with open(self.key_file, "wb") as f:
                 f.write(key)
             return key
-# Verschlüsselt einen Text
+    # Verschlüsselt einen Text
     def encrypt(self, text: str) -> str:
          # encode() wandelt Text in Bytes um
         # encrypt() verschlüsselt den Text
@@ -60,5 +60,5 @@ def verify_master_password(password, salt, saved_hash):
             salt,
             100_000
         )
- # Vergleicht neuen Hash mit gespeichertem Hash
+        # Vergleicht neuen Hash mit gespeichertem Hash
         return new_hash == saved_hash

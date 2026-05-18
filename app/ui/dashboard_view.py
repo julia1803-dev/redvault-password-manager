@@ -1,22 +1,23 @@
 import customtkinter as ctk
 from PIL import Image
-from tkinter import messagebox
+from tkinter import messagebox # Popup-Meldungen
 
-from app.services.password_generator import PasswordGenerator
+from app.services.password_generator import PasswordGenerator # Passwortgenerator importieren
 
 
 class DashboardView(ctk.CTkFrame):
     def __init__(self, master, db):
-        super().__init__(master, fg_color="#0b0b0b")
+        super().__init__(master, fg_color="#0b0b0b") # Basis-Frame initialisieren
 
         self.master = master
         self.db = db
-        self.passwords_visible = False
+        self.passwords_visible = False # Status für Passwortanzeige
+
 
         self.create_widgets()
-        self.refresh_entries()
+        self.refresh_entries() # Gespeicherte Einträge laden
 
-    def create_widgets(self):
+    def create_widgets(self): #Erstellung komplette Benutzerobefläche
         self.master.title("RedVault Passwortmanager")
         self.master.geometry("1000x650")
 
@@ -46,13 +47,13 @@ class DashboardView(ctk.CTkFrame):
             text_color="#E5E5E5"
         ).pack(side="left")
 
-        button_frame = ctk.CTkFrame(self, fg_color="transparent")
+        button_frame = ctk.CTkFrame(self, fg_color="transparent") # Bereich für Buttons
         button_frame.pack(pady=10)
 
         ctk.CTkButton(
             button_frame,
             text="+ Neuer Eintrag",
-            command=self.open_new_entry_form,
+            command=self.open_new_entry_form,# Öffnet Formular für neuen Eintrag
             fg_color="#e50914",
             hover_color="#ff1a25",
             width=200,
@@ -62,7 +63,7 @@ class DashboardView(ctk.CTkFrame):
         self.show_button = ctk.CTkButton(
             button_frame,
             text="Passwörter anzeigen",
-            command=self.toggle_passwords,
+            command=self.toggle_passwords,# Zeigt oder versteckt Passwörter
             fg_color="#222222",
             hover_color="#333333",
             width=200,
@@ -93,19 +94,19 @@ class DashboardView(ctk.CTkFrame):
         ctk.CTkLabel(header, text="Notizen", text_color="#e50914", width=160, anchor="w").grid(row=0, column=4, padx=5, sticky="w")
         ctk.CTkLabel(header, text="Aktionen", text_color="#e50914", width=190, anchor="w").grid(row=0, column=5, padx=(0, 10), sticky="e")
 
-        self.entries_frame = ctk.CTkScrollableFrame(inner, fg_color="#101010")
+        self.entries_frame = ctk.CTkScrollableFrame(inner, fg_color="#101010") # Scrollbarer Bereich für Passwort-Einträge
         self.entries_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
         self.search_entry = ctk.CTkEntry(self, placeholder_text="Suchen...", width=300)
         self.search_entry.pack(pady=10)
-        self.search_entry.bind("<KeyRelease>", lambda event: self.refresh_entries())
+        self.search_entry.bind("<KeyRelease>", lambda event: self.refresh_entries())# Aktualisiert Suche bei jeder Tasteneingabe
 
-    def refresh_entries(self):
+    def refresh_entries(self):# Lädt und zeigt alle Einträge neu an
         for widget in self.entries_frame.winfo_children():
             widget.destroy()
 
         search_text = self.search_entry.get().lower()
-        entries = self.db.get_entries()
+        entries = self.db.get_entries()# Holt alle Einträge aus der Datenbank
 
         for entry in entries:
             entry_id = entry[0]
@@ -128,7 +129,7 @@ class DashboardView(ctk.CTkFrame):
             ):
                 continue
 
-            shown_password = password if self.passwords_visible else "••••••••"
+            shown_password = password if self.passwords_visible else "••••••••"# Passwort sichtbar oder versteckt anzeigen
 
             row = ctk.CTkFrame(self.entries_frame, fg_color="#1c1c1c", corner_radius=14)
             row.pack(fill="x", padx=15, pady=8)
@@ -156,7 +157,7 @@ class DashboardView(ctk.CTkFrame):
                 height=34,
                 fg_color="#222222",
                 hover_color="#333333",
-                command=lambda p=password: self.copy_password(p)
+                command=lambda p=password: self.copy_password(p)# Passwort kopieren
             ).pack(side="left", padx=2)
 
             ctk.CTkButton(
@@ -178,11 +179,11 @@ class DashboardView(ctk.CTkFrame):
                 fg_color="#E5E5E5",
                 hover_color="#F5F5F5",
                 text_color="black",
-                command=lambda eid=entry_id: self.delete_entry(eid)
+                command=lambda eid=entry_id: self.delete_entry(eid)# Eintrag löschen
             ).pack(side="left", padx=4)
 
-    def toggle_passwords(self):
-        self.passwords_visible = not self.passwords_visible
+    def toggle_passwords(self):# Wechselt zwischen sichtbar/versteckt
+        self.passwords_visible = not self.passwords_visible# True wird False und umgekehrt
 
         if self.passwords_visible:
             self.show_button.configure(text="Passwörter verstecken")
@@ -191,7 +192,7 @@ class DashboardView(ctk.CTkFrame):
 
         self.refresh_entries()
 
-    def delete_entry(self, entry_id):
+    def delete_entry(self, entry_id):# Öffnet Bestätigungsfenster zum Löschen
         dialog = ctk.CTkToplevel(self.master)
         dialog.title("Löschen")
         dialog.geometry("360x200")
@@ -212,7 +213,7 @@ class DashboardView(ctk.CTkFrame):
         button_frame = ctk.CTkFrame(dialog, fg_color="transparent")
         button_frame.pack(pady=10)
 
-        def confirm_delete():
+        def confirm_delete():# Löscht Eintrag aus der Datenbank
             self.db.delete_entry(entry_id)
             self.refresh_entries()
             dialog.destroy()
@@ -237,11 +238,11 @@ class DashboardView(ctk.CTkFrame):
             height=40
         ).grid(row=0, column=1, padx=10)
 
-    def copy_password(self, password):
+    def copy_password(self, password):# Kopiert Passwort in Zwischenablage
         self.master.clipboard_clear()
         self.master.clipboard_append(password)
 
-    def edit_entry(self, entry_id, old_website, old_username, old_password, old_category="", old_notes=""):
+    def edit_entry(self, entry_id, old_website, old_username, old_password, old_category="", old_notes=""): # Formular zum Bearbeiten öffnen
         form = ctk.CTkToplevel(self.master)
         form.lift()
         form.focus_force()
@@ -255,7 +256,7 @@ class DashboardView(ctk.CTkFrame):
 
         ctk.CTkLabel(form, text="Website", text_color="#e50914", font=("Arial", 14, "bold")).pack(anchor="w", padx=150)
         website_entry = ctk.CTkEntry(form, width=300, height=40)
-        website_entry.insert(0, old_website)
+        website_entry.insert(0, old_website)# Vorhandene Werte einfügen
         website_entry.pack(pady=8)
 
         ctk.CTkLabel(form, text="Benutzername", text_color="#e50914", font=("Arial", 14, "bold")).pack(anchor="w", padx=150)
@@ -289,7 +290,7 @@ class DashboardView(ctk.CTkFrame):
                 messagebox.showwarning("Fehler", "Bitte alle Pflichtfelder ausfüllen.")
                 return
 
-            self.db.update_entry(entry_id, website, username, password, category, notes)
+            self.db.update_entry(entry_id, website, username, password, category, notes)# Datenbankeintrag aktualisieren
             self.refresh_entries()
             form.destroy()
 
@@ -303,7 +304,29 @@ class DashboardView(ctk.CTkFrame):
             height=45
         ).pack(pady=25)
 
-    def open_new_entry_form(self):
+    def check_password_strength(self, password):
+        score = 0
+
+        if len(password) >= 8:
+            score += 1
+
+        if any(char.isdigit() for char in password):
+            score += 1
+
+        if any(char.isupper() for char in password):
+            score += 1
+
+        if any(char in "!@#$%^&*()-_?" for char in password):
+             score += 1
+
+        if score <= 1:
+            return "Schwach", "red"
+        elif score <= 3:
+            return "Mittel", "orange"
+        else:
+            return "Stark", "green"
+
+    def open_new_entry_form(self): # Formular für neuen Eintrag öffnen
         form = ctk.CTkToplevel(self.master)
         form.lift()
         form.focus_force()
@@ -329,10 +352,28 @@ class DashboardView(ctk.CTkFrame):
         password_entry = ctk.CTkEntry(form, placeholder_text="Passwort", width=300, height=40, show="*")
         password_entry.pack(pady=8)
 
-        def generate_password():
+        strength_label = ctk.CTkLabel(
+            form,
+            text="Passwortstärke: -",
+            text_color="#E5E5E5"
+        )
+        strength_label.pack(pady=2)
+
+        def update_strength(event=None):
+            strength, color = self.check_password_strength(password_entry.get())
+
+            strength_label.configure(
+                text=f"Passwortstärke: {strength}",
+                text_color=color
+            )
+
+        password_entry.bind("<KeyRelease>", update_strength)
+
+        def generate_password(): # Zufälliges Passwort generieren
             generated_password = PasswordGenerator.generate()
             password_entry.delete(0, "end")
             password_entry.insert(0, generated_password)
+            update_strength()
 
         ctk.CTkButton(
             form,
@@ -350,7 +391,7 @@ class DashboardView(ctk.CTkFrame):
         notes_entry = ctk.CTkEntry(form, placeholder_text="Notizen", width=300, height=40)
         notes_entry.pack(pady=8)
 
-        def save_entry():
+        def save_entry(): # Neuen Eintrag speichern
             website = website_entry.get().strip()
             username = username_entry.get().strip()
             password = password_entry.get().strip()
