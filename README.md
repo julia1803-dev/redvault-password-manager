@@ -10,6 +10,7 @@ Die Anwendung ermöglicht das sichere Speichern, Verwalten und Generieren von Pa
 - CRUD-Funktionen für Passwort-Einträge
 - Suche nach Website oder Benutzername
 - Passwortgenerator
+- Passwortstärke-Anzeige
 - Kategorien für Einträge
 - Bearbeiten bestehender Einträge
 - Löschbestätigung vor dem Entfernen
@@ -87,25 +88,33 @@ redvault/
 │   │   └── vault_service.py
 │   │
 │   ├── ui/
+│   │   ├── dashboard_view.py
+│   │   ├── login_view.py
 │   ├── app.py
 │   └── config.py
-│
+│   └── _init_.py
 ├── assets/
 │   └── logo.png
+│   └── Screenshot_Bearbeiten.png
+│   └── Scrennshot_Dashboard.png
+│   └── Screenshot_Master_Passwort.png
+│   └── Screenshot_Neuer_Eintrag.png
 │
 ├── main.py
 ├── README.md
+├── concept.md
 ├── requirements.txt
 ├── vault.db
 └── secret.key
 
 ## Geplante Erweiterungen
 
-- Passwortstärke-Anzeige
 - Auto-Lock bei Inaktivität
 - Backup / Export
 - Favoriten-System
 - Papierkorb
+- Kategorie-Auswahl als Dropdown
+- Cloud-Sync
 
 ## Screenshots
 

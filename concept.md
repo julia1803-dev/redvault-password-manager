@@ -7,7 +7,6 @@ Projekt im Rahmen des HF Moduls OOP & Softwarearchitektur.
 RedVault ist ein lokaler Passwortmanager zur sicheren Verwaltung von Website-Logins.  
 Ziel ist es, Passwörter verschlüsselt zu speichern und einfach zugänglich zu machen.
 
----
 
 # 2. Zielsetzung
 
@@ -18,19 +17,21 @@ Ziel ist es, Passwörter verschlüsselt zu speichern und einfach zugänglich zu 
 - Passwortgenerator
 - Kategorien für Einträge
 - Passwortmaskierung
+- Passwortstärke Anzeige
 - Copy-to-Clipboard Funktion
+- Suchfunktion
 - Verschlüsselte Speicherung
 - SQLite-Datenbank
 - Dunkles UI mit CustomTkinter
 
 ## Erweiterte Ziele
-- Passwortstärke-Anzeige
 - Favoriten-System
 - Papierkorb
 - Backup / Export
 - Auto-Lock bei Inaktivität
+- Cloud-Sync
+- Katrgorie-Auswahl als Dropdown
 
----
 
 # 3. Technologien
 
@@ -39,7 +40,6 @@ Ziel ist es, Passwörter verschlüsselt zu speichern und einfach zugänglich zu 
 - SQLite
 - Cryptography
 
----
 
 # 4. Architektur
 
@@ -85,6 +85,7 @@ Sicherheitsmechanismen:
 - AES-Verschlüsselung mit der Cryptography Library
 - Lokale Speicherung ohne Cloud-Anbindung
 - Trennung von Logik und Datenzugriff
+- Passwortstärke-Anzeige
 
 # 7. Datenhaltung
 
@@ -125,7 +126,6 @@ Das Projekt ist so aufgebaut, dass es von einer Drittperson lokal ausgeführt we
 
 Alle benötigten Pakete sind in `requirements.txt` definiert.
 
----
 
 # 10. Bewertungskriterien
 

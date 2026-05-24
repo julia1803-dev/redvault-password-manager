@@ -10,7 +10,6 @@ class PasswordRepository:
         self.connection = db.get_connection()
 
     def add_entry(self, entry: PasswordEntry):
-        # Cursor wird benötigt um SQL-Befehle auszuführen
         cursor = self.connection.cursor()
         # SQL INSERT-Befehl zum Speichern eines neuen Eintrags
         cursor.execute("""

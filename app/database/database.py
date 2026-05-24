@@ -99,3 +99,28 @@ class Database:
             self.connection.close()
         except sqlite3.Error as e:
             print("Fehler beim Schließen der Verbindung:", e)
+
+        # Speichert Einstellungen wie Salt oder Passwort-Hash in der Tabelle settings
+    def save_setting(self, key, value):
+        cursor = self.connection.cursor()
+
+        cursor.execute("""
+        INSERT OR REPLACE INTO settings (key, value)
+        VALUES (?, ?)
+        """, (key, value))
+
+        self.connection.commit()
+
+
+    # Holt gespeicherte Einstellungen
+    def get_setting(self, key):
+        cursor = self.connection.cursor()
+
+        cursor.execute("""
+        SELECT value FROM settings
+        WHERE key = ?
+        """, (key,))
+
+        row = cursor.fetchone()
+
+        return row[0] if row else None
