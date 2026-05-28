@@ -25,13 +25,13 @@ class Database:
                 notes TEXT
             )
             """)
-            # Tabelle für Einstellungen erstellen
+            # Tabelle für Einstellungen erstellen (Master-Passwort)
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS settings (
                 key TEXT PRIMARY KEY,
-                value BLOB NOT NULL
+                value BLOB NOT NULL 
             )
-            """)
+            """) #Binärdaten verschlüsselte Daten oder Hashes
 
             self.connection.commit()
 

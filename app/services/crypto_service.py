@@ -27,16 +27,18 @@ class CryptoService:
             with open(self.key_file, "wb") as f:
                 f.write(key)
             return key
+        
     # Verschlüsselt einen Text
     def encrypt(self, text: str) -> str:
-         # encode() wandelt Text in Bytes um
         # encrypt() verschlüsselt den Text
         # decode() macht daraus wieder lesbaren Text
-        return self.fernet.encrypt(text.encode()).decode()
+        return self.fernet.encrypt(text.encode()).decode() # encode() wandelt Text in Bytes um
+    
     # Entschlüsselt einen Text
     def decrypt(self, encrypted_text: str) -> str:
        
         return self.fernet.decrypt(encrypted_text.encode()).decode()
+    
     # Funktion zum Hashen des Master-Passworts
 def hash_master_password(password, salt=None):
     if salt is None:
