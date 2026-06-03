@@ -48,17 +48,17 @@ class DashboardView(ctk.CTkFrame):
         ).pack(side="left")
 
         button_frame = ctk.CTkFrame(self, fg_color="transparent") # Bereich für Buttons
-        button_frame.pack(pady=10)
+        button_frame.pack(pady=10)#Vertikaler Abstand
 
         ctk.CTkButton(
             button_frame,
             text="+ Neuer Eintrag",
             command=self.open_new_entry_form,# Öffnet Formular für neuen Eintrag
-            fg_color="#e50914",
-            hover_color="#ff1a25",
+            fg_color="#e50914",#Hintergrund
+            hover_color="#ff1a25",#Farbe beim Klicken
             width=200,
             height=45
-        ).grid(row=0, column=0, padx=10)
+        ).grid(row=0, column=0, padx=10)#Raster aus Zeilen und Spalten
 
         self.show_button = ctk.CTkButton(
             button_frame,
@@ -72,7 +72,7 @@ class DashboardView(ctk.CTkFrame):
         self.show_button.grid(row=0, column=1, padx=10)
 
         container = ctk.CTkFrame(self, fg_color="#e50914", corner_radius=16)
-        container.pack(padx=40, pady=30, fill="both", expand=True)
+        container.pack(padx=40, pady=30, fill="both", expand=True)#Padx - horizonterler Abstand
 
         inner = ctk.CTkFrame(container, fg_color="#101010", corner_radius=14)
         inner.pack(padx=2, pady=2, fill="both", expand=True)
@@ -80,15 +80,15 @@ class DashboardView(ctk.CTkFrame):
         header = ctk.CTkFrame(inner, fg_color="#101010")
         header.pack(fill="x", padx=25, pady=(10, 5))
 
-        header.grid_columnconfigure(0, weight=2)
-        header.grid_columnconfigure(1, weight=2)
+        header.grid_columnconfigure(0, weight=2)#definiert, wie sich die Spalten bei einer Fenstergrössenänderung verhalten
+        header.grid_columnconfigure(1, weight=2)#weight legt fest, wie viel Platz jede Spalte erhält
         header.grid_columnconfigure(2, weight=1)
         header.grid_columnconfigure(3, weight=1)
         header.grid_columnconfigure(4, weight=1)
         header.grid_columnconfigure(5, weight=0)
 
-        ctk.CTkLabel(header, text="Website", text_color="#e50914", width=260, anchor="w").grid(row=0, column=0, padx=10, sticky="w")
-        ctk.CTkLabel(header, text="Benutzername", text_color="#e50914", width=270, anchor="w").grid(row=0, column=1, padx=10, sticky="w")
+        ctk.CTkLabel(header, text="Website", text_color="#e50914", width=260, anchor="w").grid(row=0, column=0, padx=10, sticky="w")#anchor innerhalb des Labels linksbündig
+        ctk.CTkLabel(header, text="Benutzername", text_color="#e50914", width=270, anchor="w").grid(row=0, column=1, padx=10, sticky="w")#sticky innerhalb der Grid-Zelle linksbündig
         ctk.CTkLabel(header, text="Passwort", text_color="#e50914", width=160, anchor="w").grid(row=0, column=2, padx=5, sticky="w")
         ctk.CTkLabel(header, text="Kategorie", text_color="#e50914", width=130, anchor="w").grid(row=0, column=3, padx=5, sticky="w")
         ctk.CTkLabel(header, text="Notizen", text_color="#e50914", width=160, anchor="w").grid(row=0, column=4, padx=5, sticky="w")
@@ -105,7 +105,7 @@ class DashboardView(ctk.CTkFrame):
         for widget in self.entries_frame.winfo_children():
             widget.destroy()
 
-        search_text = self.search_entry.get().lower()
+        search_text = self.search_entry.get().lower() #Suchfunktion
         entries = self.db.get_entries()# Holt alle Einträge aus der Datenbank
 
         for entry in entries:
