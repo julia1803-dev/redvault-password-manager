@@ -31,7 +31,7 @@ class Database:
                 key TEXT PRIMARY KEY,
                 value BLOB NOT NULL 
             )
-            """) #Binärdaten verschlüsselte Daten oder Hashes
+            """) #Blob - Binärdaten verschlüsselte Daten oder Hashes
 
             self.connection.commit()
 

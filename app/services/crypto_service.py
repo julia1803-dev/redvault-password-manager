@@ -7,6 +7,7 @@ class CryptoService:
     def __init__(self, key_file="secret.key"):
         # Name der Datei, in der der Schlüssel gespeichert wird
         self.key_file = key_file
+
         # Lädt vorhandenen Schlüssel oder erstellt neuen
         self.key = self.load_or_create_key()
          # Erstellt Fernet-Objekt mit dem Schlüssel

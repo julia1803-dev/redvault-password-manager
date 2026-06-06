@@ -69,6 +69,14 @@ pip install -r requirements.txt
 ▶Programm starten
 py main.py
 
+Erstes Login:
+Passwort: Admin123!
+
+## Erstes Login
+
+Beim ersten Start der Anwendung wird automatisch ein Standard-Master-Passwort erstellt.
+Master-Passwort: Admin123!
+Nach erfolgreicher Anmeldung können die Passwortdaten verwaltet werden.
 
 ## Projektstruktur
 redvault/
@@ -115,6 +123,7 @@ redvault/
 - Papierkorb
 - Kategorie-Auswahl als Dropdown
 - Cloud-Sync
+- Erstellung eigenes MasterPasswort
 
 ## Screenshots
 

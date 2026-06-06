@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 from app.services.crypto_service import hash_master_password, verify_master_password # Funktionen für Passwort-Hashing und Überprüfung
 
-
+MASTER_PASSWORD = "Admin123!"
 
 class LoginView(ctk.CTkFrame):
     def __init__(self, master, db, on_login_success):

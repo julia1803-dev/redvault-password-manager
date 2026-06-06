@@ -3,6 +3,9 @@ from PIL import Image
 from tkinter import messagebox # Popup-Meldungen
 
 from app.services.password_generator import PasswordGenerator # Passwortgenerator importieren
+from app.database.password_repository import PasswordRepository
+from app.services.crypto_service import CryptoService
+from app.services.vault_service import VaultService
 
 
 class DashboardView(ctk.CTkFrame):
@@ -11,6 +14,9 @@ class DashboardView(ctk.CTkFrame):
 
         self.master = master
         self.db = db
+        self.repository = PasswordRepository(self.db)
+        self.crypto_service = CryptoService()
+        self.vault_service = VaultService(self.repository, self.crypto_service)
         self.passwords_visible = False # Status für Passwortanzeige
 
 
@@ -106,7 +112,7 @@ class DashboardView(ctk.CTkFrame):
             widget.destroy()
 
         search_text = self.search_entry.get().lower() #Suchfunktion
-        entries = self.db.get_entries()# Holt alle Einträge aus der Datenbank
+        entries = self.vault_service.get_passwords()# Holt alle Einträge aus der Datenbank
 
         for entry in entries:
             entry_id = entry[0]
@@ -290,7 +296,17 @@ class DashboardView(ctk.CTkFrame):
                 messagebox.showwarning("Fehler", "Bitte alle Pflichtfelder ausfüllen.")
                 return
 
-            self.db.update_entry(entry_id, website, username, password, category, notes)# Datenbankeintrag aktualisieren
+            # Datenbankeintrag aktualisieren
+            encrypted_password = self.crypto_service.encrypt(password)
+
+            self.db.update_entry(
+                entry_id,
+                website,
+                username,
+                encrypted_password,
+                category,
+                notes
+            )
             self.refresh_entries()
             form.destroy()
 
@@ -402,7 +418,7 @@ class DashboardView(ctk.CTkFrame):
                 messagebox.showwarning("Fehler", "Bitte alle Felder ausfüllen.")
                 return
 
-            self.db.add_entry(website, username, password, category, notes)
+            self.vault_service.add_password(website, username, password, category, notes)
             self.refresh_entries()
             form.destroy()
 
