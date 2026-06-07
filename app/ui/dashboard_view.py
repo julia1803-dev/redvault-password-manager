@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 from tkinter import messagebox # Popup-Meldungen
 
-from app.services.password_generator import PasswordGenerator # Passwortgenerator importieren
+from app.services.password_generator import PasswordGenerator
 from app.database.password_repository import PasswordRepository
 from app.services.crypto_service import CryptoService
 from app.services.vault_service import VaultService
@@ -332,12 +332,15 @@ class DashboardView(ctk.CTkFrame):
         if any(char.isupper() for char in password):
             score += 1
 
-        if any(char in "!@#$%^&*()-_?" for char in password):
-             score += 1
+        if any(char.islower() for char in password):
+            score += 1
 
-        if score <= 1:
+        if any(char in "!@#$%^&*()-_?" for char in password):
+            score += 1
+
+        if score <= 2:
             return "Schwach", "red"
-        elif score <= 3:
+        elif score <= 4:
             return "Mittel", "orange"
         else:
             return "Stark", "green"
@@ -375,7 +378,7 @@ class DashboardView(ctk.CTkFrame):
         )
         strength_label.pack(pady=2)
 
-        def update_strength(event=None):
+        def update_strength(event=None):#die Funktion wird später durch eine Tastatureingabe ausgelöst.
             strength, color = self.check_password_strength(password_entry.get())
 
             strength_label.configure(
@@ -383,7 +386,7 @@ class DashboardView(ctk.CTkFrame):
                 text_color=color
             )
 
-        password_entry.bind("<KeyRelease>", update_strength)
+        password_entry.bind("<KeyRelease>", update_strength)#die Passwortstärke wird live aktualisiert
 
         def generate_password(): # Zufälliges Passwort generieren
             generated_password = PasswordGenerator.generate()
