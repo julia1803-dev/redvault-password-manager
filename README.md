@@ -1,4 +1,4 @@
-# 🔐 RedVault – Password Manager
+# RedVault – Password Manager
 
 RedVault ist ein lokaler Passwortmanager für Websites, entwickelt in Python.  
 Die Anwendung ermöglicht das sichere Speichern, Verwalten und Generieren von Passwörtern.
