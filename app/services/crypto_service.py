@@ -32,8 +32,8 @@ class CryptoService:
     # Verschlüsselt einen Text
     def encrypt(self, text: str) -> str:
         # encrypt() verschlüsselt den Text
-        # decode() macht daraus wieder lesbaren Text
         return self.fernet.encrypt(text.encode()).decode() # encode() wandelt Text in Bytes um
+        # decode() macht daraus wieder lesbaren Text
     
     # Entschlüsselt einen Text
     def decrypt(self, encrypted_text: str) -> str:

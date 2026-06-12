@@ -17,13 +17,13 @@ class RedVaultApp(ctk.CTk):
         ctk.set_default_color_theme("dark-blue")
 
         self.db = Database()
-        self.show_login()
+        self.show_login() #Beim Start wird zuerst das Login-Fenster angezeigt
 
-    def clear_window(self):# Entfernt alle aktuellen UI-Elemente
+    def clear_window(self):# Diese Methode löscht alle aktuellen Elemente im Fenster
         for widget in self.winfo_children():
             widget.destroy()
 
-    def show_login(self):
+    def show_login(self): #Diese Methode zeigt das Login-Fenster
         self.clear_window()
         LoginView(self, self.db, self.show_dashboard).pack(fill="both", expand=True)
 
