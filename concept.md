@@ -27,7 +27,8 @@ Ziel ist es, Passwörter verschlüsselt zu speichern und einfach zugänglich zu 
 ## Erweiterte Ziele
 - Favoriten-System
 - Papierkorb
-- Backup / Export
+- E2E-Verschlüsselung
+- 2-Faktor-Authentifizierung
 - Auto-Lock bei Inaktivität
 - Cloud-Sync
 - Katrgorie-Auswahl als Dropdown

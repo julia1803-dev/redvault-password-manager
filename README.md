@@ -118,7 +118,8 @@ redvault/
 ## Geplante Erweiterungen
 
 - Auto-Lock bei Inaktivität
-- Backup / Export
+- E2E-Verschlüsselung
+- 2-Faktor-Authentifizierung
 - Favoriten-System
 - Papierkorb
 - Kategorie-Auswahl als Dropdown
