@@ -2,15 +2,14 @@ import customtkinter as ctk
 
 from app.services.crypto_service import hash_master_password, verify_master_password # Funktionen für Passwort-Hashing und Überprüfung
 
-MASTER_PASSWORD = "Admin123!"
 
 class LoginView(ctk.CTkFrame):
     def __init__(self, master, db, on_login_success):
         super().__init__(master, fg_color="#0b0b0b") # Basis-Frame initialisieren
 
-        self.db = db
+        self.db = db #Datenbankobjekt speichern
         self.conn = db.connection # Datenbankverbindung speichern
-        self.on_login_success = on_login_success
+        self.on_login_success = on_login_success #Funktion speichern, die später Dashboard öffnet
 
         self.setup_master_password() # Erstellt Master-Passwort beim ersten Start
         self.create_widgets()
@@ -36,7 +35,7 @@ class LoginView(ctk.CTkFrame):
 
             self.conn.commit()
 
-    def create_widgets(self):
+    def create_widgets(self): #Diese Methode erstellt die sichtbare Login-Oberfläche
         title_frame = ctk.CTkFrame(self, fg_color="transparent")
         title_frame.pack(pady=(20, 10))
 

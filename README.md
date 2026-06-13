@@ -70,7 +70,10 @@ pip install -r requirements.txt
 py main.py
 
 Erstes Login:
-Passwort: Admin123!
+Beim ersten Start wird ein Master-Passwort eingerichtet.
+
+Falls bereits eine lokale Datenbank `vault.db` vorhanden ist, kann diese gelöscht werden,
+damit ein neues Master-Passwort gesetzt werden kann.
 
 ## Erstes Login
 
