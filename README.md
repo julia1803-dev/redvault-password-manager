@@ -70,10 +70,12 @@ pip install -r requirements.txt
 py main.py
 
 ## Erstes Login
-Beim ersten Start wird ein Master-Passwort eingerichtet.
+Beim ersten Start wird ein Master-Passwort eingerichtet. Dieses Passwort muss sich der Benutzer merken, da es nicht im Klartext gespeichert wird.
 
 Falls bereits eine lokale Datenbank `vault.db` vorhanden ist, kann diese gelöscht werden,
 damit ein neues Master-Passwort gesetzt werden kann.
+
+Hinweis: Die Dateien vault.db und secret.key werden lokal erstellt und sind aus Sicherheitsgründen nicht im GitHub-Repository enthalten.
 
 ## Projektstruktur
 redvault/
