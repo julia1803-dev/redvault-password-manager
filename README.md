@@ -69,17 +69,11 @@ pip install -r requirements.txt
 ▶Programm starten
 py main.py
 
-Erstes Login:
+## Erstes Login
 Beim ersten Start wird ein Master-Passwort eingerichtet.
 
 Falls bereits eine lokale Datenbank `vault.db` vorhanden ist, kann diese gelöscht werden,
 damit ein neues Master-Passwort gesetzt werden kann.
-
-## Erstes Login
-
-Beim ersten Start der Anwendung wird automatisch ein Standard-Master-Passwort erstellt.
-Master-Passwort: Admin123!
-Nach erfolgreicher Anmeldung können die Passwortdaten verwaltet werden.
 
 ## Projektstruktur
 redvault/
